@@ -9,6 +9,10 @@ import {
   DragEndEvent,
   defaultDropAnimationSideEffects,
   DropAnimation,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  TouchSensor,
 } from "@dnd-kit/core";
 import {
   SimulationType,
@@ -101,7 +105,7 @@ function DraggableAllele({
       {...listeners}
       {...attributes}
       onClick={onClick}
-      className={`px-3 py-2 rounded-xl font-mono font-bold text-sm border shadow-sm cursor-grab active:cursor-grabbing select-none flex items-center gap-1.5 transition transform active:scale-95 ${colorClass} ${
+      className={`px-3 py-2 rounded-xl font-mono font-bold text-sm border shadow-sm cursor-grab active:cursor-grabbing select-none flex items-center gap-1.5 transition transform active:scale-95 touch-none ${colorClass} ${
         isDragging ? "opacity-30" : "opacity-100"
       }`}
     >
@@ -229,6 +233,22 @@ export default function SimulationPage() {
     type: "success" | "error";
     msg: string;
   } | null>(null);
+
+  // Konfigurasi sensor touch agar membedakan antaras touch drag vs scroll
+  const mouseSensor = useSensor(PointerSensor, {
+    activationConstraint: {
+      distance: 5, // Harus ditarik setidaknya 5px baru dianggap drag (mencegah salah klik)
+    },
+  });
+
+  const touchSensor = useSensor(TouchSensor, {
+    activationConstraint: {
+      delay: 150, // Tahan 150ms di HP untuk mengaktifkan mode drag (mencegah konflik scroll)
+      tolerance: 5,
+    },
+  });
+
+  const sensors = useSensors(mouseSensor, touchSensor);
 
   const handleStartSimulation = (e: React.FormEvent) => {
     e.preventDefault();
@@ -428,6 +448,7 @@ export default function SimulationPage() {
 
   return (
     <DndContext
+      sensors={sensors}
       onDragStart={(e) => {
         setDraggedValue(e.active.data.current?.value as string);
         setIsDropValid(false);

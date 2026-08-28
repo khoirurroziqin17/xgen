@@ -128,3 +128,11 @@
     @apply font-sans;
   }
 }
+
+/* Mencegah scroll layar saat elemen drag diaktifkan */
+.touch-none {
+  touch-action: none !important;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
