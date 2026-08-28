@@ -105,7 +105,7 @@ function DraggableAllele({
       {...listeners}
       {...attributes}
       onClick={onClick}
-      className={`px-3 py-2 rounded-xl font-mono font-bold text-sm border shadow-sm cursor-grab active:cursor-grabbing select-none flex items-center gap-1.5 transition transform active:scale-95 touch-none ${colorClass} ${
+      className={`px-3 py-2 rounded-xl font-mono font-bold text-sm border shadow-sm cursor-grab active:cursor-grabbing select-none flex items-center gap-1.5 transition transform active:scale-95 touch-pan-x ${colorClass} ${
         isDragging ? "opacity-30" : "opacity-100"
       }`}
     >
@@ -234,7 +234,7 @@ export default function SimulationPage() {
     msg: string;
   } | null>(null);
 
-  // Konfigurasi sensor touch agar membedakan antaras touch drag vs scroll
+  // Konfigurasi Sensor Pembeda Arah Usapan (Directional Touch Sensing)
   const mouseSensor = useSensor(PointerSensor, {
     activationConstraint: {
       distance: 5, // Harus ditarik setidaknya 5px baru dianggap drag (mencegah salah klik)
@@ -243,8 +243,8 @@ export default function SimulationPage() {
 
   const touchSensor = useSensor(TouchSensor, {
     activationConstraint: {
-      delay: 150, // Tahan 150ms di HP untuk mengaktifkan mode drag (mencegah konflik scroll)
-      tolerance: 5,
+      // Sensitivitas jarak sebelum drag aktif
+      distance: 8,
     },
   });
 
@@ -1061,7 +1061,7 @@ export default function SimulationPage() {
               </button>
             </div>
 
-            <div className="flex gap-2 overflow-x-auto pb-2 pt-1 min-h-[50px] items-center">
+            <div className="flex gap-2 overflow-x-auto pb-2 pt-1 min-h-[50px] items-center touch-pan-x scroll-smooth">
               {activeTab === "parental" &&
                 allelePool?.parental.map((a, i) => (
                   <DraggableAllele
